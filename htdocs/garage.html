@@ -1,0 +1,170 @@
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" media="screen and (min-device-width: 1480px) and (min-device-height: 0px)" href="desktop.css" />
+    <link rel="stylesheet" media="screen and (max-device-width: 1480px) and (min-device-height: 0px)" href="763.css" />
+    <link rel="stylesheet" media="screen and (max-device-width: 763px) and (min-device-height: 0px)" href="575.css" />
+    <link rel="stylesheet" media="screen and (max-device-width: 575px) and (min-device-height: 0px)" href="min.css" />
+</head>
+<body onload="getTime()">
+    
+    
+<!-- div to contain the entire body -->
+<div class=garagePageDiv>
+    <!-- div to contain the controls (back etc.)-->
+    <div class="controls">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <a class="btn" href="index.html">Back</a>
+                <span id="CRSpan" class="rounded">CR<span id="balanceSpan">Balance: </span></span>
+                <span id="spinSpan" class="rounded btn">Spins: </span>
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+    </div>
+    
+    <!-- div to contain the main table which will show the owned cars. Split into 3 columns, only the middle has content in it. -->
+    <div class="garageView">
+        <!-- left column -->
+        <div class="row">
+            <div class=col-sm-2></div>
+            <!-- middle column -->
+            <div class="col-sm-8 garageTableDiv">
+                <table class="table table-bordered" id="mainTable">
+                    
+                </table>
+            </div>
+            <!-- right column -->
+            <div class=col-sm-2></div>
+        </div>
+    </div>
+</div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+
+
+<script>
+    
+    //constantly update the balance and ownedcars to ensure the modt up to date value is used
+    window.ownedCars = JSON.parse(localStorage.getItem("OwnedCars"));
+    window.balance = JSON.parse(localStorage.getItem("Balance"));
+    window.currentHour = JSON.parse(localStorage.getItem("CurrentHour"));
+    window.currentSpins = JSON.parse(localStorage.getItem("CurrentSpins"));
+    
+    
+    function getTime() 
+    {
+        var d = new Date();
+        var h = d.getHours();
+        console.log(h);
+        console.log(currentHour);
+        
+        
+        
+        if (currentHour === null){
+            localStorage.setItem("CurrentHour", JSON.stringify(h));
+        }
+        else {
+            localStorage.setItem("CurrentHour",JSON.stringify(h));
+        }
+        if(currentHour<h)
+            {
+                currentSpins = currentSpins + (h-currentHour);
+            }
+        
+        
+        getSpins();
+       
+    }
+    
+    function getSpins()
+    {
+        if (currentSpins === null){
+            localStorage.setItem("CurrentSpins", JSON.stringify(5));
+        }
+        document.getElementById("spinSpan").innerHTML = currentSpins;
+        
+        
+        getOwnedCars(); 
+        
+    }
+    
+    //retrieves the users car collection and updates the localstorage Key
+    function getOwnedCars(){
+             
+        //if the key doesnt exist then create it as an empty list
+        if (ownedCars === null){
+            localStorage.setItem("OwnedCars", JSON.stringify([]));
+        }
+        
+        //tableText is used to read the data from the owned cars list into the UI
+        //essentially HTML that will be added later
+        var tableText = " ";
+        tableText +="<table class='table table-bordered'>";
+        tableText+="<tr><th>Image</th><th>Manufacturer</th><th>Model</th><th>Year</th><th>Price</th></tr>";
+        
+        //if no cars are owned then show an message.
+        if(ownedCars[0]==null){
+            tableText+="<tr><td><span>No cars owned, Spin to get cars</span><td><tr>";
+        }
+        
+        //iterate through the owned cars and generate html to add each car to the table
+        var rowNumber;
+        for(i=0;i<ownedCars.length;i++){
+            //rownumber is used to link a sell button to its row,
+            rowNumber = (i);
+            tableText+="<tr>";
+            tableText+="<td><img class='img-rounded garageImage' src='"+ ownedCars[i].image +"'/></td>";
+            tableText+="<td>" + ownedCars[i].make + "</td>";
+            tableText+="<td>" + ownedCars[i].model + "</td>";
+            tableText+="<td>" + ownedCars[i].year + "</td>";
+            tableText+="<td>" + ownedCars[i].price + "</td>";
+            tableText+='<td><button class="btn" onclick="sellCar(' + rowNumber + ')">Sell</button></td>';
+            tableText+="</tr>";
+        }
+        tableText+="</table>";
+        
+        //add the generated html to the UI
+        document.getElementById("mainTable").innerHTML = tableText;
+        
+        //next retrieve the users balance 
+        getBalance();
+    }
+
+    //removes a car from the users collection and adds the value of the car to thier balance
+    function sellCar(row)
+    {
+        //retrieve the most up to date balance
+        window.balance = JSON.parse(localStorage.getItem("Balance"));
+        //add the price of the car to be sold to the balance
+        balance+=ownedCars[row].price;
+        //remove the car from the users collection
+        ownedCars.splice(row,1);
+        //update ownedcars and balance
+        localStorage.setItem("OwnedCars", JSON.stringify(ownedCars));
+        localStorage.setItem("Balance", JSON.stringify(balance));
+        //refresh the page to display changes
+        location.reload();
+ 
+     }
+
+    //retreves the users balance from localStorage
+    function getBalance(){
+        //id the key doesnt exist set it to 0
+        if (balance === null){
+            localStorage.setItem("Balance", JSON.stringify(0));
+        }
+        //update UI
+        document.getElementById("balanceSpan").innerHTML = JSON.parse(localStorage.getItem("Balance"));
+        
+    }
+</script>

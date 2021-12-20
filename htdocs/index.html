@@ -1,0 +1,287 @@
+<html>
+
+
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" media="screen and (min-device-width: 1480px) and (min-device-height: 0px)" href="desktop.css" />
+    <link rel="stylesheet" media="screen and (max-device-width: 1480px) and (min-device-height: 0px)" href="763.css" />
+    <link rel="stylesheet" media="screen and (max-device-width: 763px) and (min-device-height: 0px)" href="575.css" />
+    <link rel="stylesheet" media="screen and (max-device-width: 575px) and (min-device-height: 0px)" href="min.css" />
+    
+</head>
+    
+    
+
+<body onload="getTime()">
+
+<!-- div to contain the entire body -->
+<div class="spinPageDiv">
+    
+    <!-- div to contain the controls (spin, garage etc.)-->
+    <div class="controls">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <button class="btn" onclick="spin()">SPIN</button>
+                <a class="btn" href="garage.html">Garage</a>
+                <span id="CRSpan" class="rounded">CR<span id="balanceSpan">Balance: </span></span>
+                <span id="spinSpan" class="rounded btn">Spins: </span>
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+    </div>
+        
+        
+    <!-- div to contain the wheel part of the page, each row has 3 columns (1:left logo column, 2:middle wheel column, 3:blank spacing column) -->    
+    <div class="mainWheel">
+        
+        <!-- top row -->
+        <div class="row topRow">
+            <div class="col-sm-6 topRowLeft"></div>
+            <div class="col-sm-5" id="topRowMiddle">
+                <img class="img-rounded" src="" />
+            </div>
+            <div class="col-sm-1 topRowRight"></div>
+        </div>
+        
+        <!-- middle row -->
+        <div class="row middleRow">
+            <div class="col-sm-6 middleRowLeft">
+                <img class="img-rounded" src="resources/images/Wheelspin.png" id="logo"/> 
+                <img class="img-rounded" src="resources/images/Arrow.png" id="arrow" />
+            </div>
+            <div class="col-sm-5" id="middleRowMiddle">
+                <img class="img-rounded" src="" />
+            </div>
+            <div class="col-sm-1 middleRowRight"></div>
+        </div>
+            
+        <!-- bottom row -->    
+        <div class="row bottomRow">
+            <div class="col-sm-6 bottomRowLeft"></div>
+            <div class="col-sm-5" id="bottomRowMiddle">
+                <img class="img-rounded" src="" />
+            </div>
+            <div class="col-sm-1 bottomRowRight"></div>
+        </div>
+    </div>    
+</div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+
+<script>
+    
+    //constantly update the balance and ownedcars to ensure the modt up to date value is used
+    window.balance = JSON.parse(localStorage.getItem("Balance"));
+    window.ownedCars = JSON.parse(localStorage.getItem("OwnedCars"));
+    window.currentHour = JSON.parse(localStorage.getItem("CurrentHour"));
+    window.currentSpins = JSON.parse(localStorage.getItem("CurrentSpins"));
+    console.log(currentSpins);
+    
+    
+    function getTime() 
+    {
+        var d = new Date();
+        var h = d.getHours();
+        console.log(h);
+        console.log(currentHour);
+        
+        
+        
+        if (currentHour === null){
+            localStorage.setItem("CurrentHour", JSON.stringify(h));
+        }
+        else {
+            localStorage.setItem("CurrentHour",JSON.stringify(h));
+        }
+        if(currentHour<h)
+            {
+                currentSpins = currentSpins + (h-currentHour);
+            }
+        
+        
+        getSpins();
+       
+    }
+    
+    function getSpins()
+    {
+        if (currentSpins === null){
+            localStorage.setItem("CurrentSpins", JSON.stringify(5));
+        }
+        document.getElementById("spinSpan").innerHTML = currentSpins;
+        
+        
+        createObjectList(); 
+        
+    }
+    //creates all available car objects and adds them to a global list.
+     function createObjectList()
+    {
+        //a global variable to hold the list of availble cars (currently hardcoded, likely inefficient)
+        window.cars = [];
+        
+        //add each car object to the list
+        cars.push({ make: "BMW", model: "M5", price: 30000, year: 2003, image: "resources/images/BMWM52003.jpg" });
+        cars.push({ make: "Honda", model: "CR-X SiR", price: 20000, year: 1991, image: "resources/images/HondaCR-XSiR1991.jpg" });
+        cars.push({ make: "Land Rover", model: "Range Rover Sport SVR", price: 133000, year: 2015, image: "resources/images/LandRoverRangeRoverSportSVR2015.jpg" });
+        cars.push({ make: "Jaguar", model: "F-Type R Coupé", price: 110000, year: 2015, image: "resources/images/JaguarF-TypeRCoupe2015.jpg" });
+        cars.push({ make: "Lamborghini", model: "Sesto Elemento", price: 2500000, year: 2011, image: "resources/images/LamboSesto2011.jpg"});
+        cars.push({ make: "Plymouth", model: "Fury", price: 200000, year: 1958, image: "resources/images/PlymouthFury1958.jpg"  });
+        cars.push({ make: "Volkswagon", model: "Golf R", price: 64000, year: 2010, image: "resources/images/VWGolfR2010.jpg" });
+       
+
+        //set up the rest of the app by retrieving balance and ownedcars from localstorage.
+        //setupSpin adds 12 random cars to a list to be available in a spin
+        setupSpin();
+        getBalance();
+        getOwnedCars();
+        
+    }
+
+    //adds 12 cars to a list which will then be available to win from the spin
+    function setupSpin()
+    {
+        //the index of the object from the list
+        var index;
+        //an object from the list
+        var carFromList;
+        //the list to hold the selected cars
+        window.spinCars = [];
+
+
+        //select a random car from the complete list of availble cars (repeat 3 times, once for each row)
+        
+        //bottom row
+        index = Math.floor(Math.random() * cars.length);
+        carFromList = cars[index];
+        document.getElementById("bottomRowMiddle").innerHTML = '<img class="img-rounded" src="' + carFromList.image + '" />';
+        spinCars.push(carFromList);
+        
+        //middle row
+        index = Math.floor(Math.random() * cars.length);
+        carFromList = cars[index];
+        document.getElementById("middleRowMiddle").innerHTML = '<img class="img-rounded" src="' + carFromList.image + '" />';
+        spinCars.push(carFromList);
+
+        //top row
+        index = Math.floor(Math.random() * cars.length);
+        carFromList = cars[index];
+        document.getElementById("topRowMiddle").innerHTML = '<img class="img-rounded" src="' + carFromList.image + '" />';
+        spinCars.push(carFromList);
+
+
+        //add 9 more cars which will be shown when the wheel begins spinning.
+
+        for (var x = 0; x <= 8; x++)
+        {
+            index = Math.floor(Math.random() * cars.length);
+            carFromList = cars[index];
+            spinCars.push(carFromList);
+        }
+
+
+    }
+    //this function sets up variables for and calls the iterateSpin() function which swaps the image contents of the wheel to simulate a spinning motion.
+    function spin() 
+    {
+        if (JSON.parse(localStorage.getItem("CurrentSpins")) >0) 
+            {
+            setupSpin();
+            //3 variables to hold the html content of each row
+            var currentMiddle = " ";
+            var currentTop = " ";
+            var currentBottom = " ";
+            //used to stop the "spinning"
+            window.iterationCount = 0;
+            iterateSpin(); 
+    }
+    else
+        {
+            alert("You have no Spins!");
+        }
+    }
+    
+    //constantly loops until iterationCount is met, simulates spinning of a wheel.
+    function iterateSpin() {
+        if (iterationCount < 200) {
+            //inner html of each row to be swapped
+            currentTop = document.getElementById("topRowMiddle").innerHTML;
+            currentMiddle = document.getElementById("middleRowMiddle").innerHTML;
+            currentBottom = document.getElementById("bottomRowMiddle").innerHTML;
+
+            //swap the innerhtml of middle and bottom rows
+            document.getElementById("bottomRowMiddle").innerHTML = currentMiddle;
+            document.getElementById("middleRowMiddle").innerHTML = currentTop;
+            
+            //select a new random car from a pre generated list.
+            index = Math.floor(Math.random() * spinCars.length);
+            var nextCar = spinCars[index];
+
+            //add the selected car to the top row so that more than 3 cars can appear in a spin
+            document.getElementById("topRowMiddle").innerHTML = '<img class="img-rounded" src="' + nextCar.image + '" />';
+            
+            //increment the iteration counter
+            iterationCount = iterationCount + 1;
+            
+            //callback function
+            setTimeout(iterateSpin, 20); 
+            }
+        
+            //if the iterations are complete then collect the car
+            else {
+                //decrease spins by one;
+                localStorage.setItem("CurrentSpins",JSON.stringify(currentSpins-1));
+                currentSpins = JSON.parse(localStorage.getItem("CurrentSpins"));
+                document.getElementById("spinSpan").innerHTML = JSON.parse(localStorage.getItem("CurrentSpins"));
+                collectCar();
+            }
+            
+           
+        }
+
+        //adds the car that has been won to the users collection
+        function collectCar()
+            {
+                //iterate through the cars in the spin
+                for (z = 0; z <= spinCars.length-1; z++)
+                {
+                    //find the car that matches the one in the middle row (ie. the one the user has won)
+                    if ('<img class="img-rounded" src="'+ spinCars[z].image +'">' == document.getElementById("middleRowMiddle").innerHTML)
+                    {
+                        //add the car to the collection and update in localstorage
+                        ownedCars.push(spinCars[z]);
+                        localStorage.setItem("OwnedCars", JSON.stringify(ownedCars));
+                        break;
+                    }
+
+                }
+            }
+    
+    //retrieves balance from localstorage and displays it in the UI
+    function getBalance()
+    {
+        //if balance hasnt yet been assigned then assign it to 0
+        if (balance === null){
+            localStorage.setItem("Balance", JSON.stringify(0));
+        }
+        //update UI
+        document.getElementById("balanceSpan").innerHTML = JSON.parse(localStorage.getItem("Balance"));
+    }
+    //similar to getBalance() but retrieves the users owned cars, no need to update UI
+    function getOwnedCars()
+    {
+        if (ownedCars === null){
+            localStorage.setItem("OwnedCars", JSON.stringify([]));
+        }
+    }
+</script>
